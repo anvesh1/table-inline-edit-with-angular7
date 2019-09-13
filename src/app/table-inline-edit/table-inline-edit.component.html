@@ -1,0 +1,164 @@
+<table>
+    <tbody>
+        <tr>
+          <td  class="form-group" 
+            *ngFor="let input of inputFields | keyvalue; let i=index"
+            [ngSwitch]="input.value.input">
+            
+            <!-- {{input.key}} -->
+            {{input.value.input}}
+            <!-- {{input.value.type}} -->
+            <input *ngSwitchCase="'input'"
+              type="{{input.value.type}}" class="form-control"
+              placeholder="{{input.value.placeholder}}" 
+              (change)="dataToUpdate(i)">
+    
+            <select *ngSwitchCase="'select'" class="form-control">  
+            <option>test</option></select>
+          </td>
+          </tr>
+     </tbody>     
+    </table>
+    
+    <form  [formGroup]="userForm">
+        <table class="editable table table-striped">
+          <thead>
+            <th>Name</th>
+            <th>Email</th>
+            <!-- <th>Start Date</th> -->
+            <th>Phone Number</th>
+          </thead>
+          <tbody [formGroup]="control" *ngFor="let control of userForm.get('users').controls; let i=index">
+            <tr>
+              <td  class="form-group">
+                <span *ngIf="!editable[i]['name']" 
+                  (click)="editable[i]['name']=!editable[i]['name']">
+                  {{control.get('name').value}}
+                </span>
+                <input *ngIf="editable[i]['name']"
+                  type="text" class="form-control" autofocus 
+                  formControlName="name" placeholder="name" 
+                  (blur)="editable[i]['name']=!editable[i]['name']" 
+                  (change)="dataToUpdate(i)">
+                <!-- <span class="text-danger" *ngIf="control.get('name').touched && control.get('name').invalid">name is required</span> -->
+              </td>
+    
+              <td class="form-group">
+                <span *ngIf="!editable[i]['email']"
+                  (click)="editable[i]['email']=!editable[i]['email']">
+                  {{control.get('email').value}}
+                </span>
+                <input *ngIf="editable[i]['email']"
+                type="text" class="form-control" autofocus 
+                formControlName="email" placeholder="email" 
+                (blur)="editable[i]['email']=!editable[i]['email']"  
+                (change)="dataToUpdate(i)">
+                <!-- <span class="text-danger" *ngIf="control.get('email').touched && control.get('email').invalid">email required</span> -->
+              </td>
+              <!--
+              <td class="form-group">
+                  <span id="startDateSpan-{{i}}" (click)="editRequest($event,i, 'startDate', true)">
+                    {{control.get('startDate').value.year}}-{{control.get('startDate').value.month}}-{{control.get('startDate').value.day}}
+                  </span>
+                  <input id="startDateInput-{{i}}" 
+                    class="form-control inline-hide" 
+                    ngbDatepicker  (click)="datePicker.toggle()" 
+                    #datePicker="ngbDatepicker" formControlName="startDate" placeholder="yyyy-mm-dd" 
+                    (blur)="dataToUpdate(i);editRequest($event,i, 'startDate', false)">
+              </td>
+              -->
+              <!-- <td class="form-group">
+                  <ngb-timepicker formControlName="startTime" meridian="meridian"></ngb-timepicker>
+              </td> -->
+              <td  class="form-group">
+                <span *ngIf="!editable[i]['mobNumber']"
+                  (click)="editable[i]['mobNumber']=!editable[i]['mobNumber']">
+                  {{control.get('mobNumber').value}}
+                </span>
+                <!-- <input type="text" class="form-control" formControlName="mobNumber" placeholder="mobile number" (change)="dataToUpdate(i)"> -->
+                <!-- <span>{{control.get('mobNumber').value}}</span> -->
+                <select class="form-control" autofocus 
+                  *ngIf="editable[i]['mobNumber']"
+                  formControlName="mobNumber" 
+                  (change)="dataToUpdate(i)"
+                  (blur)="editable[i]['mobNumber']=!editable[i]['mobNumber']">
+                  <option *ngFor="let c of countries" [ngValue]="c">{{ c }}</option>
+                  <option value="2222">2222</option>
+                  <option value="1111">1111</option>
+                  <option value="3333">3333</option>
+                </select>
+              
+              </td>
+              <td>
+                <button data-toggle="modal" data-target="#myModal" 
+                  class="btn btn-primary btn-sm"
+                  (click)="showModel()">
+                  <i class="fa fa-external-link"></i>
+                </button>&nbsp;
+                <button (click)="remove(i)" class="btn btn-danger btn-sm">
+                  <i class="fa fa-trash"></i>
+                </button>&nbsp;
+                <button class="btn btn-info btn-sm" 
+                    (click)="collapsed[i]=!collapsed[i]">
+                    <i class="fa fa-chevron-down" *ngIf="!collapsed[i]"></i>
+                    <i class="fa fa-chevron-up" *ngIf="collapsed[i]"></i>
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="collapsed[i]">
+              <td>
+                <p>Showing content {{i}}</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </form>
+      <form  [formGroup]="newUserForm">
+        <table class="table table-striped">
+          <tbody>
+            <tr [formGroup]="control" *ngFor="let control of newUserForm.get('users').controls; let i=index">
+              <td  class="form-group">
+                <input id="newNameInput-{{i}}" type="text" class="form-control"  
+                formControlName="name" placeholder="name">
+              </td>
+              <td class="form-group">
+                <input type="text" class="form-control" id="emailInput-{{i}}"
+                formControlName="email" placeholder="email">
+                <span class="text-danger" *ngIf="control.get('email').touched && control.get('email').invalid">email required</span>
+              </td>
+              <!--
+              <td class="form-group">
+                <span id="newStartDateSpan-{{i}}" (click)="editRequest($event,i, 'startDate', true)">
+                  {{control.get('startDate').value.year}}-{{control.get('startDate').value.month}}-{{control.get('startDate').value.day}}
+                </span>
+                <input id="newStartDateInput-{{i}}" 
+                  class="form-control inline-hide" 
+                  ngbDatepicker  (click)="datePicker.toggle()" 
+                  #datePicker="ngbDatepicker" formControlName="startDate" placeholder="yyyy-mm-dd" 
+                  (blur)="dataToUpdate(i);editRequest($event,i, 'startDate', false)">
+              </td>
+              -->
+              <td  class="form-group">
+                <select class="form-control" id="newMobNumberInput-{{i}}" 
+                  formControlName="mobNumber">
+                  <option *ngFor="let c of countries" [ngValue]="c">{{ c }}</option>
+                  <option value="2222">2222</option>
+                  <option value="1111">1111</option>
+                  <option value="3333">3333</option>
+                </select>
+              </td>
+              <td>
+                <!-- <button (click)="remove(i)" class="btn btn-primary btn-sm">Remove</button> -->
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </form>
+      &nbsp;&nbsp;&nbsp;
+      <button (click)="addUser()" class="btn btn-primary btn-sm">Add new</button>&nbsp;
+      <button (click)="save()" class="btn btn-primary btn-sm">Save</button>
+      
+      <div *ngIf="showModal">
+        <!-- Modal -->
+        <app-model></app-model>
+      </div>
